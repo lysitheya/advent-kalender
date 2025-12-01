@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Our Romantic Advent Calendar 🎄❤️</title>
+
+<style>
+/* ----------------------------------------------------
+   COZY ROMANTIC CHRISTMAS THEME 🎄💖 (FINAL NO-GLITCH)
+   ---------------------------------------------------- */
+
+body {
+  margin: 0;
+  font-family: "Georgia", serif;
+  color: #fff;
+  text-align: center;
+  padding-bottom: 40px;
+  background: linear-gradient(135deg, #7a000a, #2c0002);
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* glow */
+body::before {
+  content: "";
+  position: absolute; /* changed from fixed */
+  top: -30%;
+  left: -20%;
+  width: 140%;
+  height: 140%;
+  background: radial-gradient(circle, rgba(255,200,150,0.22), rgba(0,0,0,0));
+  z-index: -1;
+}
+
+/* fairy lights — NO FIXED POSITION */
+body::after {
+  content: "";
+  position: absolute;  /* FIXED → ABSOLUTE */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image:
+    radial-gradient(circle at 10% 20%, rgba(255,240,200,0.35) 1px, transparent 3px),
+    radial-gradient(circle at 80% 60%, rgba(255,240,200,0.25) 1px, transparent 3px),
+    radial-gradient(circle at 50% 90%, rgba(255,240,200,0.3) 2px, transparent 4px);
+  background-size: cover;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Title */
+h1 {
+  margin-top: 20px;
+  font-size: 2.4rem;
+  color: #ffd6d6;
+  text-shadow: 0 0 12px #ffb7b7, 0 0 20px #ffd4d4;
+}
+
+/* Music button */
+#music-toggle {
+  margin-top: 8px;
+  padding: 8px 20px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(135deg, #ffd1d1, #ffbaba);
+  color: #7a000a;
+  font-size: 1rem;
+  box-shadow: 0 0 12px rgba(255,185,185,0.55);
+}
+
+/* Calendar */
+.calendar {
+  margin: 30px auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 18px;
+  max-width: 760px;
+  padding: 0 20px;
+}
+
+/* Door */
+.door {
+  padding: 30px 10px;
+  font-size: 1.8rem;
+  border-radius: 20px;
+  cursor: pointer;
+  background: linear-gradient(135deg, rgba(255,230,230,0.25), rgba(255,208,208,0.1));
+  border: 2px solid rgba(255,230,230,0.4);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.35);
+  position: relative;
+  transition: background 0.25s, box-shadow 0.25s;
+}
+
+/* Hover — NO TRANSFORM */
+.door:hover:not(.locked) {
+  background: rgba(255,230,230,0.32);
+  box-shadow:
+    0 0 10px rgba(255,200,200,0.5),
+    0 0 10px rgba(0,0,0,0.3);
+}
+
+/* locked */
+.locked {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* opened */
+.door.opened {
+  background: rgba(255,240,200,0.28);
+  border-color: rgba(255,245,200,0.9);
+  box-shadow:
+    0 0 12px rgba(255,220,150,0.7),
+    0 0 10px rgba(255,200,150,0.5);
+}
+
+/* Popup (NO blur) */
+#popup {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+}
+
+/* Popup content */
+#popup-content {
+  background: rgba(255,230,230,0.22);
+  border: 1px solid rgba(255,200,200,0.45);
+  border-radius: 22px;
+  padding: 25px 30px;
+  max-width: 90%;
+  width: 520px;
+  box-shadow:
+    0 0 18px rgba(0,0,0,0.35),
+    0 0 12px rgba(255,200,200,0.3);
+  position: relative;
+}
+
+/* Answer */
+.choice {
+  background: #ffe3e3;
+  color: #7a000a;
+  padding: 12px;
+  border-radius: 14px;
+  margin-top: 12px;
+  cursor: pointer;
+  font-size: 1.05rem;
+  transition: background 0.2s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+/* NO TRANSFORM HERE EITHER */
+.choice:hover {
+  background: #fff0f0;
+}
+
+.choice.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* Close button */
+.close-btn {
+  margin-top: 18px;
+  padding: 10px 20px;
+  background: #ffd4d4;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  color: #7a000a;
+  font-size: 1rem;
+}
+
+/* Timer */
+#timer-message {
+  margin-top: 10px;
+  font-size: 0.9rem;
+  color: #ffdcdc;
+}
+
+/* Snowflakes */
+.snowflake {
+  position: fixed;
+  top: -10px;
+  color: #fff;
+  font-size: 1rem;
+  pointer-events: none;
+  animation-name: fall;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  z-index: 2;
+}
+
+@keyframes fall {
+  0% { transform: translateY(-10px); opacity: 1; }
+  100% { transform: translateY(110vh); opacity: 0; }
+}
+
+/* Hearts */
+.heart {
+  position: fixed;
+  bottom: 20px;
+  font-size: 2rem;
+  pointer-events: none;
+  animation: floatUp 1.6s ease-out forwards;
+  z-index: 9999;
+}
+
+@keyframes floatUp {
+  0% { transform: translateY(0) scale(1); opacity: 1; }
+  100% { transform: translateY(-180px) scale(1.6); opacity: 0; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- PASSWORD SCREEN -->
+<div id="password-screen" style="
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.88);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  z-index: 99999;
+  color: white;
+  font-family: Georgia, serif;
+  text-align: center;
+  padding: 20px;
+">
+  <h2>💖 Hallo mein Schatzi 💖</h2>
+  <p>Gib die ersten vier Ziffern meines Geburtsdatums ein:</p>
+  <input id="pw-input" type="password" placeholder="••••" style="
+    padding: 10px 15px;
+    border-radius: 12px;
+    border: none;
+    margin-top: 10px;
+    font-size: 1.3rem;
+    text-align: center;
+  ">
+  <button onclick="checkPassword()" style="
+    margin-top: 15px;
+    padding: 10px 25px;
+    border-radius: 12px;
+    border: none;
+    background: #ffd1d1;
+    color: #7a000a;
+    font-size: 1rem;
+    cursor: pointer;
+  ">Freischalten ✨</button>
+  <p id="pw-error" style="margin-top:10px;color:#ffb7b7;display:none;">
+    Dubiooos
+  </p>
+</div>
+
+<h1>❤️ Adventskalender für meinen liebsten Schatz 🎄</h1>
+<button id="music-toggle">▶️ Spiele Weihnachtsmusik 🎶</button>
+
+<div class="calendar" id="calendar"></div>
+
+<div id="popup"><div id="popup-content"></div></div>
+
+<audio id="bg-music" src="music.mp3" loop></audio>
+
+<script>
+/* PASSWORD CHECK */
+function checkPassword() {
+  const pw = document.getElementById("pw-input").value;
+  const correct = "2712"; // your 4-digit password
+
+  if (pw === correct) {
+    document.getElementById("password-screen").style.display = "none";
+  } else {
+    document.getElementById("pw-error").style.display = "block";
+  }
+}
+
+/* also allow Enter key */
+document.addEventListener("keydown", function(e){
+  if (e.key === "Enter") {
+    const screen = document.getElementById("password-screen");
+    if (screen && screen.style.display !== "none") {
+      checkPassword();
+    }
+  }
+});
+
+/* Questions + gifts */
+const days = {
+
+1:{ 
+  question:"Wo habe ich mein Muttermal?", 
+  choices:["Bein","Arm","Kopf","Popo"], 
+  correct:0, 
+  gift:"Dein Geschenk 🎁: Eine Kussattacke auf dich 🫦💋💋💋"
+},
+
+2:{
+  question:"Um wie viel Uhr bin ich geboren?",
+  choices:["06:15","11:15","16:15","21:15"],
+  correct:1,
+  gift:"Dein Geschenk 🎁: Ein Massage-Gutschein 🎟️ (gültig 28 Tage)"
+},
+
+3:{
+  question:"Wie viele Narben habe ich?",
+  choices:["0","1–3","3–6","7–10"],
+  correct:3,
+  gift:"Dein Geschenk 🎁: Schau in deinen Bettschrank 💗"
+},
+
+4:{
+  question:"Wann war unser erstes Date?",
+  choices:["23.10.23","27.10.23","29.10.23","31.10.23"],
+  correct:2,
+  gift:"Dein Geschenk 🎁: Küsse deinen Schatz 10× auf die Nase und erhalte was 🥰"
+},
+
+5:{
+  question:"Mit wem habe ich am Anfang am meisten über dich gesprochen?",
+  choices:["Cesar","Olya","Mama","Maria"],
+  correct:0,
+  gift:"Dein Geschenk 🎁: Schau in deinen Schuhen 🤭"
+},
+
+6:{
+  question:"Wann war unser erster Kuss?",
+  choices:["29.10.23","05.11.23","11.11.23","14.11.23"],
+  correct:3,
+  gift:"Dein Geschenk 🎁: Schau da, wo du am meisten Zeit verbringst 🤩🤩"
+},
+
+7:{
+  question:"Was ist mein Lieblingsspitzname von dir?",
+  choices:["Baby","Liebe","Schatzi","Alle"],
+  correct:3,
+  gift:"Dein Geschenk 🎁: Schau unter deinem Kissen ❤️"
+},
+
+8:{
+  question:"Welche Küsschen von dir genieße ich am meisten?",
+  choices:["Schnelle","Langsame","Überraschende","Alle von dir"],
+  correct:3,
+  gift:"Dein Geschenk 🎁: Kinogutschein für den Film deiner Wahl! 🎟️"
+},
+
+9:{
+  question:"Was hatte ich früher als Haustier?",
+  choices:["Katze","Hamster","Chinchilla","Schildkröte"],
+  correct:2,
+  gift:"Dein Geschenk 🎁: Schau dort, wo ich Skincare mache 😶‍🌫️"
+},
+
+10:{
+  question:"In welchem Familienmitglied von dir erkenne ich mich am meisten?",
+  choices:["Papa","Mama","Johanna","Oma"],
+  correct:2,
+  gift:"Dein Geschenk 🎁: Schau dort, wo Lusen schlafi schlafi tut 😴"
+},
+
+11:{
+  question:"Was durfte ich als Kind aus gesundheitlichen Gründen nicht essen?",
+  choices:["Pralinen","Teig","Rotes Fleisch","Chips"],
+  correct:0,
+  gift:"Dein Geschenk 🎁: Schau da, wo ich lesen sollte 😄"
+},
+
+12:{
+  question:"Was hasse ich, wenn Menschen machen?",
+  choices:["Laut kauen","Finger knacken","Schnarchen","Alles davon"],
+  correct:1,
+  gift:"Dein Geschenk 🎁: Scrub-Abend im Bad mit Schatzi 😶‍🌫️🛁🫦"
+},
+
+13:{
+  question:"Was war mein Traumberuf als ich klein war?",
+  choices:["Flugbegleiterin","Tierärztin","Sängerin","Bankerin"],
+  correct:3,
+  gift:"Dein Geschenk 🎁: Schau da, wo es sonst gruselig ist hinzuschauen 🙂"
+},
+
+14:{
+  question:"Welche Schuhgröße trage ich?",
+  choices:["38","38.5","39","39.5"],
+  correct:1,
+  gift:"Dein Geschenk 🎁: Kuschel dein Schatzi ganz fest und du bekommst auf jeden Fall was;))"
+},
+
+15:{
+  question:"Was ist mein Lieblingspopcorngeschmack?",
+  choices:["Käse","Salzig","Karamell","Butter"],
+  correct:1,
+  gift:"Dein Geschenk 🎁: Schau da, wo du fleißig am Lernen bist 📚"
+},
+
+16:{
+  question:"Womit verbringe ich die meiste Zeit?",
+  choices:["Planen","Familie","Arbeit","Lernen"],
+  correct:0,
+  gift:"Dein Geschenk 🎁: Schau da, wo deine Pipihosen entspannen 🥰"
+},
+
+17:{
+  question:"Ohne was verlasse ich das Haus nicht?",
+  choices:["Powerbank","Wasser","Lippenstift","Meine Ringe"],
+  correct:3,
+  gift:"Dein Geschenk 🎁: Schau an den schwarzen Fleck in deinem Zimmer 😀"
+},
+
+18:{
+  question:"Welcher Job würde mich langweilen?",
+  choices:["Verkäufer","Bibliothekar","Arzt","Koch"],
+  correct:0,
+  gift:"Dein Geschenk 🎁: Gib deinem Schatzi 3 Komplimente und schau was passiert ✨✨✨"
+},
+
+19:{
+  question:"Wovor habe ich Angst?",
+  choices:["Verschlucken & Sterben","Komische Geräusche","Selbst Autofahren","Klotür vergessen zu schließen"],
+  correct:3,
+  gift:"Dein Geschenk 🎁: Schau dort, wo deine Buchserie liegt 🐉"
+},
+
+20:{
+  question:"Unser nächster Urlaub:",
+  choices:["Griechenland","Irland","Italien","Japan"],
+  correct:1,
+  gift:"Dein Geschenk 🎁: Schau in deinen Hosen aus Leder 🍺"
+},
+
+21:{
+  question:"Was liebe ich an dir am meisten?",
+  choices:["Dein Lächeln","Deine Liebe","Dein Popo","Alles davon & mehr"],
+  correct:3,
+  gift:"Dein Geschenk 🎁: Schau da, wo dein Schatzi schläft 🥰"
+},
+
+22:{
+  question:"Was habe ich als Schulkind NICHT gemacht?",
+  choices:["Gedichte schreiben","Gitarre lernen","Tennis spielen","Malen"],
+  correct:2,
+  gift:"Dein Geschenk 🎁: Eislaufen Gutschein!! ⛸️❤️"
+},
+
+23:{
+  question:"Was bringt mich zum Weinen?",
+  choices:["Scharfes Essen","Wie süß mein Schatzi ist","Kindermovies","Alles davon"],
+  correct:3,
+  gift:"Dein Geschenk 🎁: Schau hinter den Fernseher 🙃"
+},
+
+24:{
+  question:"Was würde ich mir zu Weihnachten wünschen?",
+  choices:["Nächstes Weihnachten mit dir","Übernächstes Weihnachten mit dir","Über-übernächstes mit dir","Alles davon"],
+  correct:3,
+  gift:"Dein Geschenk 🎁: Schau an den besonderen Weihnachtsort ✨"
+}
+};
+
+
+const calendar = document.getElementById("calendar");
+const today = new Date().getDate();
+let wrongCounter = 0;
+let isLocked = false;
+let lockInterval = null;
+
+/* Create doors */
+for (let i = 1; i <= 24; i++) {
+  const door = document.createElement("div");
+  door.className = "door";
+  door.textContent = i;
+  if (i > today) door.classList.add("locked");
+  else door.onclick = () => openDoor(i, door);
+  calendar.appendChild(door);
+}
+
+function openDoor(day, door) {
+  door.classList.add("opened");
+  showQuestion(day, days[day]);
+}
+
+/* Popup + answers */
+function showQuestion(day, data) {
+  wrongCounter = 0;
+  isLocked = false;
+  clearInterval(lockInterval);
+  
+  const popup = document.getElementById("popup");
+  const box = document.getElementById("popup-content");
+  box.innerHTML = `<h2>Tag ${day} 🎄</h2><p>${data.question}</p>`;
+  
+  data.choices.forEach((c,i)=>{
+    const btn = document.createElement("div");
+    btn.className = "choice";
+    btn.textContent = c;
+    btn.onclick = () => checkAnswer(i, data);
+    box.appendChild(btn);
+  });
+  
+  box.appendChild(Object.assign(document.createElement("div"), {id:"timer-message"}));
+
+  const closeButton = document.createElement("button");
+  closeButton.className = "close-btn";
+  closeButton.textContent = "Schließen";
+  closeButton.onclick = closePopup;
+  box.appendChild(closeButton);
+
+  popup.style.display = "flex";
+}
+
+function checkAnswer(index, data) {
+  if (isLocked) return;
+
+  if (index === data.correct) {
+    spawnHearts();
+    document.getElementById("popup-content").innerHTML =
+      `<h2>Ganz richtig! 🥰</h2><p>${data.gift}</p><button class="close-btn" onclick="closePopup()">Schließen</button>`;
+  } else {
+    wrongCounter++;
+    if (wrongCounter === 1) alert("Nu, versuchs nochmal!");
+    else if (wrongCounter === 2) { alert("Schatzn bitte, gib dir Mühe 😀"); startPunishmentTimer(); }
+    else alert("Gruuuuselig");
+  }
+}
+
+function closePopup() {
+  document.getElementById("popup").style.display = "none";
+  isLocked = false;
+  clearInterval(lockInterval);
+}
+
+function startPunishmentTimer() {
+  isLocked = true;
+  const choices = document.querySelectorAll(".choice");
+  choices.forEach(c=>c.classList.add("disabled"));
+  
+  let remaining = 7;
+  const timerDiv = document.getElementById("timer-message");
+  timerDiv.textContent = `Warte ${remaining} sek…`;
+  
+  lockInterval = setInterval(()=>{
+    remaining--;
+    if (remaining <= 0) {
+      clearInterval(lockInterval);
+      isLocked = false;
+      choices.forEach(c=>c.classList.remove("disabled"));
+      timerDiv.textContent = "Nun kannst du nochmal probieren 😉";
+    } else timerDiv.textContent = `Warte ${remaining} sek…`;
+  }, 1000);
+}
+
+/* Hearts */
+function spawnHearts() {
+  const total = 40;
+  for (let i=0;i<total;i++) {
+    const heart = document.createElement("div");
+    heart.className = "heart";
+    heart.textContent = "💗";
+    heart.style.left = `calc(50% + ${(Math.random()-0.5)*300}px)`;
+    heart.style.fontSize = `${1 + Math.random()*1.4}rem`;
+    heart.style.animationDuration = `${1.2 + Math.random()*1.4}s`;
+    document.body.appendChild(heart);
+    setTimeout(()=>heart.remove(), 2000);
+  }
+}
+
+/* Snow */
+function snowflake() {
+  const s = document.createElement("div");
+  s.className = "snowflake";
+  s.textContent = "❆";
+  s.style.left = Math.random()*100+"vw";
+  s.style.animationDuration = 6 + Math.random()*7 + "s";
+  s.style.fontSize = (0.8 + Math.random()*0.6) + "rem";
+  document.body.appendChild(s);
+  setTimeout(()=>s.remove(), 15000);
+}
+for (let i=0;i<30;i++) snowflake();
+setInterval(snowflake, 1500);
+
+/* Music */
+const music=document.getElementById("bg-music");
+const btn=document.getElementById("music-toggle");
+let playing=false;
+
+btn.onclick = () => {
+  if (!playing) {
+    music.play().then(()=>{
+      playing=true;
+      btn.textContent="⏸ Pausieren";
+    }).catch(()=>alert("Tap again to allow music 🎶"));
+  } else {
+    playing=false;
+    music.pause();
+    btn.textContent="▶️ Spiele Weihnachtsmusik 🎶";
+  }
+};
+</script>
+
+</body>
+</html>
+
